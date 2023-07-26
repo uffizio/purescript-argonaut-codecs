@@ -21,6 +21,7 @@
   , "nonempty"
   , "ordered-collections"
   , "prelude"
+  , "rationals"
   , "quickcheck"
   , "record"
   , "strings"

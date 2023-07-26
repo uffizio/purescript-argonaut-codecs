@@ -12,6 +12,7 @@ import Data.List.Types (NonEmptyList)
 import Data.Map as M
 import Data.Maybe (Maybe)
 import Data.NonEmpty (NonEmpty)
+import Data.Ratio as Ratio
 import Data.Set as S
 import Data.String (CodePoint)
 import Data.Symbol (class IsSymbol, reflectSymbol)
@@ -85,6 +86,9 @@ instance encodeJsonList :: EncodeJson a => EncodeJson (List a) where
 
 instance encodeForeignObject :: EncodeJson a => EncodeJson (FO.Object a) where
   encodeJson = encodeForeignObject encodeJson
+
+instance encodeRatio ∷ (EncodeJson number) ⇒ EncodeJson (Ratio.Ratio number) where
+  encodeJson = encodeRatio encodeJson
 
 instance encodeSet :: (Ord a, EncodeJson a) => EncodeJson (S.Set a) where
   encodeJson = encodeSet encodeJson

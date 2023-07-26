@@ -17,6 +17,7 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.Map as M
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty (NonEmpty(..))
+import Data.Ratio as Ratio
 import Data.Set as S
 import Data.String (CodePoint)
 import Data.String.CodePoints as CP
@@ -88,6 +89,9 @@ encodeList encoder = fromArray <<< map encoder <<< toUnfoldable
 
 encodeForeignObject :: forall a. (a -> Json) -> FO.Object a -> Json
 encodeForeignObject encoder = fromObject <<< map encoder
+
+encodeRatio ∷ ∀ number. (number → Json) → Ratio.Ratio number → Json
+encodeRatio encoderOfNumber ratio = fromObject (FO.fromFoldable (Tuple "numerator" (encoderOfNumber (Ratio.numerator ratio)): Tuple "denominator" (encoderOfNumber (Ratio.denominator ratio)): Nil))
 
 encodeSet :: forall a. Ord a => (a -> Json) -> S.Set a -> Json
 encodeSet encoder = encodeList encoder <<< (S.toUnfoldable :: S.Set a -> List a)
