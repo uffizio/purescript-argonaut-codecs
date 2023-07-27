@@ -14,12 +14,13 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.Map as M
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty (NonEmpty)
+import Data.Ratio as Ratio
 import Data.Set as S
 import Data.String (CodePoint)
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Tuple (Tuple)
 import Foreign.Object as FO
-import Prelude (class Ord, Unit, Void, bind, ($), (<$>))
+import Prelude (class EuclideanRing, class Ord, Unit, Void, bind, ($), (<$>))
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record as Record
@@ -84,6 +85,9 @@ instance decodeArray :: DecodeJson a => DecodeJson (Array a) where
 
 instance decodeList :: DecodeJson a => DecodeJson (List a) where
   decodeJson = decodeList decodeJson
+
+instance decodeRatio ∷ (Ord number, DecodeJson number, EuclideanRing number) ⇒ DecodeJson (Ratio.Ratio number) where
+  decodeJson = decodeRatio decodeJson
 
 instance decodeSet :: (Ord a, DecodeJson a) => DecodeJson (S.Set a) where
   decodeJson = decodeSet decodeJson

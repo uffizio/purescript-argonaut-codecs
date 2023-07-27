@@ -20,6 +20,7 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.Map as M
 import Data.Maybe (maybe, Maybe(..))
 import Data.NonEmpty (NonEmpty, (:|))
+import Data.Ratio as Ratio
 import Data.Set as S
 import Data.String (CodePoint, codePointAt)
 import Data.Traversable (traverse)
@@ -177,6 +178,12 @@ decodeList decoder =
   lmap (Named "List")
     <<< traverse decoder
     <=< map (map fromFoldable) decodeJArray
+
+decodeRatio ∷ ∀ number. Ord number ⇒ EuclideanRing number ⇒ (Json → Either JsonDecodeError number) → Json → Either JsonDecodeError (Ratio.Ratio number)
+decodeRatio decoderOfNumber json = lmap (Named "Ratio") $ {- do -} decodeJObject json >>= \ object → do
+  numerator ←  note (AtKey "numerator" MissingValue) (FO.lookup "numerator" object)
+  denominator ←  note (AtKey "denominator" MissingValue) (FO.lookup "denominator" object)
+  pure Ratio.reduce <*> decoderOfNumber numerator <*> decoderOfNumber denominator
 
 decodeSet
   :: forall a
