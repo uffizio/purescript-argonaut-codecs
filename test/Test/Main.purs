@@ -22,6 +22,7 @@ import Data.List.Types (NonEmptyList)
 import Data.Maybe (Maybe(..), isJust, isNothing, maybe)
 import Data.Monoid (power)
 import Data.NonEmpty (NonEmpty)
+import Data.Ratio as Ratio
 import Data.String (joinWith)
 import Data.String.Gen (genUnicodeString)
 import Data.Tuple (Tuple(..))
@@ -71,6 +72,7 @@ jsonParser' = either (liftEffect <<< throw) pure <<< jsonParser
 main :: Effect Unit
 main = flip runReaderT 0 do
   suite "Either Check" eitherCheck
+  suite "Ratio Check" ratioCheck
   suite "Encode/Decode NonEmpty Check" nonEmptyCheck
   suite "Encode/Decode Checks" encodeDecodeCheck
   suite "Encode/Decode Record Checks" encodeDecodeRecordCheck
@@ -221,6 +223,18 @@ eitherCheck = do
             <?> ("x = " <> show x <> ", decoded = " <> show decoded)
         Left err ->
           false <?> printJsonDecodeError err
+
+ratioCheck :: Test
+ratioCheck = do
+  test "Test EncodeJson/DecodeJson Ratio test" do
+    quickCheck \x y ->
+      let example = Ratio.reduce x y ∷ Ratio.Ratio Int in
+      case decodeJson (encodeJson example) of
+      Right decoded ->
+        decoded == example
+          <?> ("example = " <> show x <> ", decoded = " <> show decoded)
+      Left err ->
+        false <?> printJsonDecodeError err
 
 manualRecordDecode :: Test
 manualRecordDecode = do
